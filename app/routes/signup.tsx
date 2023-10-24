@@ -1,20 +1,52 @@
-import { redirect, type DataFunctionArgs, json} from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { PrismaClient } from "@prisma/client";
+import { type DataFunctionArgs, json} from "@remix-run/node";
+import { Form, useActionData, useNavigate } from "@remix-run/react";
+
+const prisma = new PrismaClient();
 
 export async function action({request}:DataFunctionArgs){
-    const data = await request.formData()
 
-    const email= data.get("email")
-    const password= data.get("password")
-
-    console.log(email)
-    console.log(password)
-
-    return json({error:"Email ja cadastrado"});
+  const data = await request.formData();
+  const email = data.get("email")?.toString();
+  const password = data.get("password")??"";
+  const passwordString = password ? password.toString() : '';
+  
+  console.log(data.get("email"))
+  console.log(data.get("password"))
+    
+  if (passwordString.length < 4) {
+    return json("A senha deve ter pelo menos 4 caracteres" );
+  }
+  
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  
+  if (user) {
+    return json("Email já cadastrado");
+  }
+  
+  return json("Registrado com sucesso");
 }
+  
+  //const newUser = await prisma.user.create({
+  //  data: {
+  //    email: email,
+  //    password: password
+  //  },
+  //});
 
+  
+    
 export default function SignUp(){
     const error= useActionData<typeof action>()
+    const navigate = useNavigate();
+
+    if (error === "Registrado com sucesso") {
+      navigate("/login");
+    } 
 
     return(
         <>
