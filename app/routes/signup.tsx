@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { type DataFunctionArgs, json} from "@remix-run/node";
-import { Form, useActionData, useNavigate } from "@remix-run/react";
+import { type DataFunctionArgs, json, redirect} from "@remix-run/node";
+import { Form, useActionData } from "@remix-run/react";
 
 const prisma = new PrismaClient();
 
@@ -28,7 +28,11 @@ export async function action({request}:DataFunctionArgs){
     return json("Email já cadastrado");
   }
   
-  return json("Registrado com sucesso");
+  return redirect("/login", {
+    headers: {
+      "Set-Cookie":"name=lipe"
+    }
+  });
 }
   
   //const newUser = await prisma.user.create({
@@ -42,12 +46,6 @@ export async function action({request}:DataFunctionArgs){
     
 export default function SignUp(){
     const error= useActionData<typeof action>()
-    const navigate = useNavigate();
-
-    if (error === "Registrado com sucesso") {
-      navigate("/login");
-    } 
-
     return(
         <>
         <div className="bg-zinc-800 h-screen py-28 px-4 w-full">

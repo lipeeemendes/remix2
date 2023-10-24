@@ -1,5 +1,18 @@
 import { HomeIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon } from "@heroicons/react/24/solid";
+import { json, type DataFunctionArgs, redirect } from "@remix-run/node";
+import { Form, Link } from "@remix-run/react";
+import { destroySession, getSession } from "~/session.server";
+
+export async function action({request}: DataFunctionArgs){
+    const session = await getSession(request.headers.get("Cookie"))
+
+    return redirect("/login", {
+        headers:{
+            "Set-Cookie":await destroySession(session)
+        }
+    })
+}
 
 export default function User(){
     return(
@@ -8,7 +21,10 @@ export default function User(){
         <div className="max-w-md mx-auto">
             <header className="flex justify-end px-4 py-4">
                 <nav>
-                    <Bars3Icon className=" w-10 h-10 text-blue-600 "/>
+                        <Bars3Icon className=" w-10 h-10 text-blue-600 "/>
+                        <Form method="post">
+                            <button type="submit">Logout</button>
+                        </Form>
                 </nav>
             </header>
             <main>
