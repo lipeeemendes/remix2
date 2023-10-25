@@ -1,7 +1,7 @@
 import { HomeIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon } from "@heroicons/react/24/solid";
-import { json, type DataFunctionArgs, redirect } from "@remix-run/node";
-import { Form, Link } from "@remix-run/react";
+import { type DataFunctionArgs, redirect } from "@remix-run/node";
+import { Form } from "@remix-run/react";
 import { destroySession, getSession } from "~/session.server";
 
 export async function action({request}: DataFunctionArgs){

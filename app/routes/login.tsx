@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { json, redirect} from "@remix-run/node";
 import type { DataFunctionArgs} from "@remix-run/node";
 import { Form } from "@remix-run/react";
@@ -11,11 +11,6 @@ export async function loader({request}:DataFunctionArgs){
     if(session.has("userId")){
         return redirect("/user")
     }
-    session.set("userId",1)
-    console.log("test")
-    //    headers: {
-    //      "Set-Cookie":await commitSession(session)
-    //    }})
     return json({})
 }
 

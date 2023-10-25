@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { type DataFunctionArgs, json, redirect} from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-
-const prisma = new PrismaClient();
+import { prisma } from "~/db.server";
 
 export async function action({request}:DataFunctionArgs){
 
