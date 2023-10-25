@@ -1,26 +1,18 @@
 import { type DataFunctionArgs, json, redirect} from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
-import { prisma } from "~/db.server";
+import { Form, Link, useActionData } from "@remix-run/react";
+import { getUserByEmail } from "~/models/user.server";
 
 export async function action({request}:DataFunctionArgs){
 
   const data = await request.formData();
-  const email = data.get("email")?.toString();
+  const email = data.get("email") as string;
   const password = data.get("password")??"";
   const passwordString = password ? password.toString() : '';
+  const user = await getUserByEmail(email) 
   
-  console.log(data.get("email"))
-  console.log(data.get("password"))
-    
   if (passwordString.length < 4) {
     return json("A senha deve ter pelo menos 4 caracteres" );
   }
-  
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
   
   if (user) {
     return json("Email já cadastrado");
@@ -33,15 +25,6 @@ export async function action({request}:DataFunctionArgs){
   });
 }
   
-  //const newUser = await prisma.user.create({
-  //  data: {
-  //    email: email,
-  //    password: password
-  //  },
-  //});
-
-  
-    
 export default function SignUp(){
     const error= useActionData<typeof action>()
     return(
@@ -57,6 +40,9 @@ export default function SignUp(){
                             <button type="submit" className=" bg-blue-600 h-9 rounded-2xl text-white hover:bg-blue-400">Create Account</button>
                         </div>
                     </Form>
+                    <Link to={"/login"} className="text-white">
+                    Ja tenho conta
+                    </Link>
                     {JSON.stringify(error)}
                 </div>
             </div>

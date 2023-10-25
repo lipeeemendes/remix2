@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { json, redirect} from "@remix-run/node";
 import type { DataFunctionArgs} from "@remix-run/node";
 import { Form } from "@remix-run/react";
+import { getUserByEmail } from "~/models/user.server";
 import { commitSession, getSession } from "~/session.server";
-
-const prisma = new PrismaClient()
 
 export async function loader({request}:DataFunctionArgs){
     const session = await getSession(request.headers.get("Cookie"))
@@ -17,14 +15,10 @@ export async function loader({request}:DataFunctionArgs){
 export async function action({request}:DataFunctionArgs){
     const data = await request.formData()
     const session = await getSession(request.headers.get("Cookie"))
-    const email = data.get("email")?.toString();
+    const email = data.get("email") as string;
     const password = data.get("password")??"";
+    const user = await getUserByEmail(email)
 
-    const user = await prisma.user.findFirst({
-        where: {
-          email: email,
-        },
-      });
       if(!user){
         return json({error: "Usuario invalido"})
       }
@@ -37,14 +31,6 @@ export async function action({request}:DataFunctionArgs){
             }
         });
         }
-      
-    
-    //console.log(data.get("email"))
-    //console.log(data.get("password")) 
-    //console.log(data.get("username"))
-    //console.log(data.get("password"))
-
-    //return redirect("/user")
     return json({})
     }
 export default function Login(){
