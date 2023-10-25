@@ -1,22 +1,26 @@
 import { type DataFunctionArgs, json, redirect} from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
-import { getUserByEmail } from "~/models/user.server";
+import { createUser, getUserByEmail } from "~/models/user.server";
 
 export async function action({request}:DataFunctionArgs){
 
   const data = await request.formData();
   const email = data.get("email") as string;
-  const password = data.get("password")??"";
-  const passwordString = password ? password.toString() : '';
-  const user = await getUserByEmail(email) 
+  const password = data.get("password") as string;
   
-  if (passwordString.length < 4) {
+  if (password.length < 4) {
     return json("A senha deve ter pelo menos 4 caracteres" );
   }
   
+  const user = await getUserByEmail(email) 
   if (user) {
     return json("Email já cadastrado");
   }
+
+  const response = await createUser(email,password)
+  if(!response){
+    return json({error:"nao cadastrado"})
+      }
   
   return redirect("/login", {
     headers: {
